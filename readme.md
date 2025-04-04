@@ -30,3 +30,22 @@
 - **multer** → Middleware for handling file uploads in Node.js applications.
 
 ---
+
+## **Server Setup**
+
+The **Express server** is configured to start on a specified port and connects to MongoDB before running.
+
+---
+
+## **Express App Configuration**
+
+- **CORS enabled** for handling cross-origin requests.
+- **JSON & URL-encoded parsing** with request size limits.
+- **Cookie parsing** for handling authentication tokens.
+- **Static file serving** enabled for public files.
+
+## **Database Connection Setup**
+
+The database connection is handled using **Mongoose**, which connects the application to MongoDB Atlas using the `MONGO_URI` environment variable.
+
+---
