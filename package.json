@@ -2,6 +2,7 @@
   "name": "inventory_billing",
   "version": "1.0.0",
   "description": "managing stores inventory and billing",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
