@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 
-const userschema = new Schema(
+const userSchema = new Schema(
   {
     fullname: {
       type: String,
@@ -40,4 +40,19 @@ const userschema = new Schema(
   }
 );
 
-export const User = model("User", userschema);
+userSchema.pre("save", async function () {
+  if (!this.isModified(this.password)) {
+    return next();
+  }
+  this.password = bcrypt.hash(this.password, 10);
+  next();
+});
+
+userSchema.methods.isPasswordCorrect = async function (password) {
+  if (!this.password) {
+    throw new Error("Password is missing in the database");
+  }
+  return await bcrypt.compare(password, this.password);
+};
+
+export const User = model("User", userSchema);
