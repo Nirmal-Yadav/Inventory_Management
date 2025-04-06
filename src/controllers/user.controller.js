@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { generateAccessAndRefreshTokens } from "../utils/generateRefreshAndAccessToken.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   console.log(req.body, "body");
@@ -55,4 +56,50 @@ const registerUser = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, createdUser, "user register succesfully"));
 });
-export { registerUser };
+
+const loginUser = asyncHandler(async (req, res) => {
+  const { username, password } = req.body;
+
+  if ([username, password].some((field) => field == "")) {
+    new ApiError(404, "All fields are required");
+  }
+
+  // const user = User.findById(username?._id);
+  const user = await User.findOne({ username });
+
+  if (!user) {
+    new ApiError(404, "user doesnot exists");
+  }
+
+  const isPasswordValid = await user.isPasswordCorrect(password);
+
+  if (!isPasswordValid) {
+    new ApiError(404, "password not matched");
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    user._id
+  );
+
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: true, // modified by only server not browser using this option
+  };
+
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        { user: loggedInUser, accessToken, refreshToken },
+        "user logged in sucessfully"
+      )
+    );
+});
+export { registerUser, loginUser };
