@@ -1,12 +1,14 @@
-import { User } from "../models/user.model";
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
+import { User } from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 
 const verifyJwt = asyncHandler(async (req, res, next) => {
   const token =
     req.cookies?.accessToken ||
     req.header("Authorization")?.replace("Bearer ", "");
+
+  console.log(token, "token");
 
   if (!token) {
     throw new ApiError(404, "user not logged in");
@@ -23,6 +25,7 @@ const verifyJwt = asyncHandler(async (req, res, next) => {
   );
 
   req.user = user;
+  next();
 });
 
 export { verifyJwt };
