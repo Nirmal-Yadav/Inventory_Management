@@ -25,7 +25,11 @@ app.use(express.static("public"));
 
 //  router
 import userRouter from "./routes/user.routes.js";
+import itemRoute from "./routes/item.routes.js";
+import billRoute from "./routes/bill.routes.js";
 
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/items", itemRoute);
+app.use("/api/v1/bills", billRoute);
 
 export { app };
